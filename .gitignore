@@ -1,1 +1,4 @@
 .vagrant
+vagrant_shared
+junk*
+_*
