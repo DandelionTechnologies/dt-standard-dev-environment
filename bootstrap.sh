@@ -49,25 +49,29 @@ mysql -e "FLUSH PRIVILEGES"
 echo -e "\n--- Installing PHP-specific packages ---\n"
 apt-get -y install php5 apache2 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php5-mysql php-apc
 
+echo -e "\n--- Setting document root to public directory ---\n"
+if ! [ -L /var/www ]; then
+    rm -rf /var/www
+    ln -fs /vagrant_shared /var/www
+    ln -s /usr/share/phpmyadmin/ /var/www/phpmyadmin
+
+    # put a couple of test files in place
+    echo "<html><head><title>hello world</title></head><body><h2>hello world</h2>things are working, at least up to this point</body></html>" > /vagrant_shared/hello_world.html
+    echo "<html><head><title>hello php</title></head><body><h2>hello php</h2>if working, should see something here: <?php echo 'hello php';?></body></html>" > /vagrant_shared/hello_php.php
+fi
+
 echo -e "\n--- Enabling mod-rewrite ---\n"
 a2enmod rewrite
 
 echo -e "\n--- Allowing Apache override to all ---\n"
 sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
 
-echo -e "\n--- Setting document root to public directory ---\n"
-if ! [ -L /var/www ]; then
-    rm -rf /var/www
-    ln -fs /vagrant_shared /var/www
-    # put a couple of test files in place
-    echo "<html><head><title>hello world</title></head><body><h2>hello world</h2>things are working, at least up to this point</body></html>" > /vagrant_shared/hello_world.html
-    echo "<html><head><title>hello php</title></head><body><h2>hello php</h2>if working, should see something here: <?php echo 'hello php';?></body></html>" > /vagrant_shared/hello_php.php
-fi
 
 echo -e "\n--- See the PHP errors ---\n"
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
 sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/apache2/php.ini
 
+# NOTE: this Listen directive addition can cause problems if trying to re-provision an existing machine - manually edit the /etc/apache2/ports.conf file to remove dupes, then service apache2 restart
 echo -e "\n--- Configure Apache to use phpmyadmin ---\n"
 echo -e "\n\nListen 81\n" >> /etc/apache2/ports.conf
 cat > /etc/apache2/conf-available/phpmyadmin.conf << "EOF"
@@ -94,7 +98,7 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOF
 EOF
 
 echo -e "\n--- Restarting Apache ---\n"
-service apache2 restart
+sudo service apache2 restart
 
 #echo -e "\n--- Installing Composer for PHP package management ---\n"
 #curl --silent https://getcomposer.org/installer | php > /dev/null 2>&1

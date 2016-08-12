@@ -24,6 +24,8 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 80, host: 4567
+  config.vm.network :forwarded_port, guest: 81, host: 4568
+  config.vm.network :forwarded_port, guest: 3306, host: 4569
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -67,6 +69,7 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   # config.vm.provision "shell", inline: <<-SHELL
   config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
