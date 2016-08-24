@@ -100,6 +100,10 @@ EOF
 echo -e "\n--- Restarting Apache ---\n"
 sudo service apache2 restart
 
+
+echo -e "\n--- Installing libwww for perl ---\n"
+sudo apt-get -y install libwww-perl
+
 #echo -e "\n--- Installing Composer for PHP package management ---\n"
 #curl --silent https://getcomposer.org/installer | php > /dev/null 2>&1
 #mv composer.phar /usr/local/bin/composer
