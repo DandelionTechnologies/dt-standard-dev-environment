@@ -66,6 +66,10 @@ a2enmod rewrite
 echo -e "\n--- Allowing Apache override to all ---\n"
 sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
 
+echo -e "\n--- turn off apache sendfile (which is bugged under virtual box, leading to weird caching issues) ---\n"
+cat > /etc/apache2/apache2.conf <<EOF
+EnableSendfile off
+EOF
 
 echo -e "\n--- See the PHP errors ---\n"
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
