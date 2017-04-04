@@ -5,18 +5,14 @@ APPENV=local
 DBHOST=localhost
 DBPASSWD=rootformysqlvagrantprovisioning
 
+echo -e "\n--- Add some repos to update our distro ---\n"
+add-apt-repository ppa:ondrej/php5
+
 echo -e "\n--- Updating packages list ---\n"
 apt-get -qq update
 
 echo -e "\n--- Install base packages ---\n"
 apt-get -y install emacs curl git
-
-echo -e "\n--- Add some repos to update our distro ---\n"
-add-apt-repository ppa:ondrej/php5
-#add-apt-repository ppa:chris-lea/node.js > /dev/null 2>&1
-
-echo -e "\n--- Updating packages list ---\n"
-apt-get -qq update
 
 echo -e "\n--- Install MySQL specific packages and settings ---\n"
 echo "mysql-server mysql-server/root_password password $DBPASSWD" | debconf-set-selections
@@ -48,6 +44,13 @@ mysql -e "FLUSH PRIVILEGES"
 
 echo -e "\n--- Installing PHP-specific packages ---\n"
 apt-get -y install php5 apache2 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php5-mysql php-apc
+
+# perl is not standard going forward, but there are some projects that might need it so this is left in place but commented out
+# echo -e "\n--- Installing libwww for perl ---\n"
+# sudo apt-get -y install libwww-perl
+
+###################################################################################
+# done with basic package installation at this point; subsequent stuff is configuration rather than install
 
 echo -e "\n--- Setting document root to public directory ---\n"
 if ! [ -L /var/www ]; then
@@ -105,24 +108,3 @@ echo -e "\n--- Restarting Apache ---\n"
 sudo service apache2 restart
 
 
-echo -e "\n--- Installing libwww for perl ---\n"
-sudo apt-get -y install libwww-perl
-
-#echo -e "\n--- Installing Composer for PHP package management ---\n"
-#curl --silent https://getcomposer.org/installer | php > /dev/null 2>&1
-#mv composer.phar /usr/local/bin/composer
-
-#echo -e "\n--- Installing NodeJS and NPM ---\n"
-#apt-get -y install nodejs > /dev/null 2>&1
-#curl --silent https://npmjs.org/install.sh | sh > /dev/null 2>&1
-
-#echo -e "\n--- Installing javascript components ---\n"
-#npm install -g gulp bower > /dev/null 2>&1
-
-#echo -e "\n--- Updating project components and pulling latest versions ---\n"
-#cd /vagrant
-#sudo -u vagrant -H sh -c "composer install" > /dev/null 2>&1
-#cd /vagrant/client
-#sudo -u vagrant -H sh -c "npm install" > /dev/null 2>&1
-#sudo -u vagrant -H sh -c "bower install -s" > /dev/null 2>&1
-#sudo -u vagrant -H sh -c "gulp" > /dev/null 2>&1
