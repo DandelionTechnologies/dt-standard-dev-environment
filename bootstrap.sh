@@ -5,9 +5,6 @@ APPENV=local
 DBHOST=localhost
 DBPASSWD=rootformysqlvagrantprovisioning
 
-echo -e "\n--- Add some repos to update our distro ---\n"
-add-apt-repository ppa:ondrej/php5
-
 echo -e "\n--- Updating packages list ---\n"
 apt-get -qq update
 
@@ -48,6 +45,9 @@ apt-get -y install php5 apache2 libapache2-mod-php5 php5-curl php5-gd php5-mcryp
 # perl is not standard going forward, but there are some projects that might need it so this is left in place but commented out
 # echo -e "\n--- Installing libwww for perl ---\n"
 # sudo apt-get -y install libwww-perl
+
+echo -e "\n--- Installing python-specific packages (pip and everything needed to support it) ---\n"
+apt-get install -y python3-pip
 
 ###################################################################################
 # done with basic package installation at this point; subsequent stuff is configuration rather than install
